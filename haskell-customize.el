@@ -412,25 +412,4 @@ imports."
   :group 'haskell
   :type 'boolean)
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Accessor functions
-
-(defun haskell-process-type ()
-  "Return `haskell-process-type', or a guess if that variable is 'auto."
-  (if (eq 'auto haskell-process-type)
-      (cond
-       ;; User has explicitly initialized this project with cabal
-       ((locate-dominating-file default-directory "cabal.sandbox.config")
-        'cabal-repl)
-       ((and (locate-dominating-file default-directory "stack.yaml")
-             (executable-find "stack"))
-        'stack-ghci)
-       ((locate-dominating-file
-         default-directory
-         (lambda (d)
-           (cl-find-if (lambda (f) (string-match-p ".\\.cabal\\'" f)) (directory-files d))))
-        'cabal-repl)
-       (t 'ghci))
-    haskell-process-type))
-
 (provide 'haskell-customize)
