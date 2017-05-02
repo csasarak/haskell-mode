@@ -30,6 +30,7 @@
 (require 'haskell-session)
 (require 'haskell-customize)
 (require 'haskell-string)
+(require 'haskell-tool)
 
 (defconst haskell-process-prompt-regex "\4"
   "Used for delimiting command replies. 4 is End of Transmission.")
@@ -72,10 +73,10 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Building the process
 
-(defun haskell-process-compute-process-log-and-command (session hptype)
-  "Compute the log and process to start command for the SESSION from the HPTYPE.
+(cl-defun haskell-process-compute-process-log-and-command (session &optional (hptype (haskell-process-type)))
+  "Compute the log and process to start command for the SESSION.
 Do not actually start any process.
-HPTYPE is the result of calling `'haskell-process-type`' function."
+The generated process is the result of calling `'haskell-process-type`' function."
   (let ((session-name (haskell-session-name session)))
     (cl-ecase hptype
       ('ghci

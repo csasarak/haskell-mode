@@ -37,47 +37,6 @@
 (require 'highlight-uses-mode)
 (require 'haskell-cabal)
 
-(cl-defstruct haskell-tool-config
-  "This structure is used to represent all the information haskell-mode
-   needs about a particular tool (e.g. stack, cabal, etc) in order to
-   use it.
-   
-   'is-usablep' is a function which when called will say whether or not
-   this tool can be used in the current environment/project."
-  (is-usablep (lambda () nil)))
-
-(defvar haskell-mode-auto
-  (make-haskell-tool-config)
-  "Ideally, auto should be a sane default.")
-
-(defvar haskell-mode-stack-ghci
-  (make-haskell-tool-config
-   :is-usablep (lambda ()
-                 (and (locate-dominating-file default-directory "stack.yaml")
-                      (executable-find "stack"))))
-  "Tool functions and data for using stack-ghci.")
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Accessor functions
-
-;; TODO: Eventually return one of the haskell-tool-configuration structures
-(defun haskell-process-type ()
-  "Return `haskell-process-type', or a guess if that variable is 'auto."
-  (if (eq 'auto haskell-process-type)
-      (cond
-       ;; User has explicitly initialized this project with cabal
-       ((locate-dominating-file default-directory "cabal.sandbox.config")
-        'cabal-repl)
-       ((funcall (haskell-tool-config-is-usablep haskell-mode-stack-ghci))
-        'stack-ghci)
-       ((locate-dominating-file
-         default-directory
-         (lambda (d)
-           (cl-find-if (lambda (f) (string-match-p ".\\.cabal\\'" f)) (directory-files d))))
-        'cabal-repl)
-       (t 'ghci))
-    haskell-process-type))
-
 (defcustom haskell-mode-stylish-haskell-path "stylish-haskell"
   "Path to `stylish-haskell' executable."
   :group 'haskell
@@ -108,7 +67,7 @@ You can create new session using function `haskell-session-make'."
     (haskell-process-set-cmd process nil)
     (haskell-process-set (haskell-session-process session) 'is-restarting nil)
     (let ((default-directory (haskell-session-cabal-dir session))
-          (log-and-command (haskell-process-compute-process-log-and-command session (haskell-process-type))))
+          (log-and-command (haskell-process-compute-process-log-and-command session)))
       (haskell-session-prompt-set-current-dir session (not haskell-process-load-or-reload-prompt))
       (haskell-process-set-process
        process
