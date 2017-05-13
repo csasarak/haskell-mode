@@ -115,7 +115,9 @@ The generated process is the result of calling `'haskell-process-type`' function
                         (let ((target (haskell-session-target session)))
                           (if target (list target) nil)))))))
       ('stack-ghci
-       (append (list (format "Starting inferior stack GHCi process using %s" haskell-process-path-stack)
+       (append (list (format "Starting inferior %s GHCi process using %s"
+                             (haskell-tool-config-tool-name haskell-mode-stack-ghci)
+                             (haskell-tool-config-process-path haskell-mode-stack-ghci))
                      session-name
                      nil)
                (apply haskell-process-wrapper-function

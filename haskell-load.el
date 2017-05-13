@@ -262,7 +262,7 @@ list of modules where missed IDENT was found."
                                ('cabal-repl haskell-process-path-cabal)
                                ('cabal-new-repl haskell-process-path-cabal)
                                ('cabal-ghci haskell-process-path-cabal)
-                               ('stack-ghci haskell-process-path-stack))
+                               ('stack-ghci (funcall (haskell-tool-config-process-path haskell-mode-stack-ghci))))
                              (cl-caddr state)))))
           :live
           (lambda (state buffer)
@@ -305,7 +305,7 @@ list of modules where missed IDENT was found."
                                ('cabal-repl haskell-process-path-cabal)
                                ('cabal-new-repl haskell-process-path-cabal)
                                ('cabal-ghci haskell-process-path-cabal)
-                               ('stack-ghci haskell-process-path-stack))
+                               ('stack-ghci (funcall (haskell-tool-config-process-path haskell-mode-stack-ghci))))
                    :app-icon haskell-process-logo)))))))))))
 
 (defun haskell-process-echo-load-message (process buffer echo-in-repl th)

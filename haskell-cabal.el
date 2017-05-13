@@ -475,6 +475,7 @@ OTHER-WINDOW use `find-file-other-window'."
           ((equal component-type "test-suite") "test")
           ((equal component-type "benchmark")  "bench"))))
 
+;; TODO: Write/generate some abstraction over a cabal file
 (defun haskell-cabal-enum-targets (&optional process-type)
   "Enumerate .cabal targets. PROCESS-TYPE determines the format of the returned target."
   (let ((cabal-file (haskell-cabal-find-file))
