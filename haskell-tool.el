@@ -24,6 +24,17 @@
 ;;; Code:
 
 (require 'haskell-customize)
+(require 'haskell-session)
+
+;; Utility Functions
+
+(defun haskell-tool-path-to-list (path)
+  "Convert a path (which may be a string or a list) to a list."
+  (if (stringp path)
+      (list path)
+    path))
+
+;; Configuration structure and tool configurations
 
 (cl-defstruct haskell-tool-config
   "This structure is used to represent all the information haskell-mode
@@ -38,10 +49,14 @@
 
    'process-path' is a string which is the path this tool with use to
    start a process.
+
+   'compute-process-log-and-command' computes the log and process to
+   start a command for a given SESSION for this tool.
    "
   tool-name
   (is-usablep (lambda () nil))
-  (process-path ""))
+  (process-path "")
+  (compute-process-log-and-command (lambda () nil)))
 
 (defvar haskell-mode-auto
   (make-haskell-tool-config)
@@ -53,7 +68,22 @@
    :is-usablep (lambda ()
                  (and (locate-dominating-file default-directory "stack.yaml")
                       (executable-find "stack")))
-   :process-path haskell-process-path-stack)
+   :process-path haskell-process-path-stack
+   :compute-process-log-and-command (lambda (session)
+                                      (let ((session-name (haskell-session-name session)))
+                                        (append (list (format "Starting inferior %s GHCi process using %s"
+                                                              (haskell-tool-config-tool-name haskell-mode-stack-ghci)
+                                                              (haskell-tool-config-process-path haskell-mode-stack-ghci))
+                                                      session-name
+                                                      nil)
+                                                (apply haskell-process-wrapper-function
+                                                       (list
+                                                        (append
+                                                         (haskell-tool-path-to-list haskell-process-path-stack)
+                                                         (list "ghci")
+                                                         (let ((target (haskell-session-target session)))
+                                                           (if target (list target) nil))
+                                                         haskell-process-args-stack-ghci)))))))
   "Tool functions and data for using stack-ghci.")
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

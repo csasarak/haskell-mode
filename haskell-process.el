@@ -86,7 +86,7 @@ The generated process is the result of calling `'haskell-process-type`' function
                      nil)
                (apply haskell-process-wrapper-function
                       (list
-                       (append (haskell-process-path-to-list haskell-process-path-ghci)
+                       (append (haskell-tool-path-to-list haskell-process-path-ghci)
                                haskell-process-args-ghci)))))
       ('cabal-new-repl
        (append (list (format "Starting inferior `cabal new-repl' process using %s ..."
@@ -96,7 +96,7 @@ The generated process is the result of calling `'haskell-process-type`' function
                (apply haskell-process-wrapper-function
                       (list
                        (append
-                        (haskell-process-path-to-list haskell-process-path-cabal)
+                        (haskell-tool-path-to-list haskell-process-path-cabal)
                         (list "new-repl")
                         haskell-process-args-cabal-new-repl
                         (let ((target (haskell-session-target session)))
@@ -109,31 +109,14 @@ The generated process is the result of calling `'haskell-process-type`' function
                (apply haskell-process-wrapper-function
                       (list
                        (append
-                        (haskell-process-path-to-list haskell-process-path-cabal)
+                        (haskell-tool-path-to-list haskell-process-path-cabal)
                         (list "repl")
                         haskell-process-args-cabal-repl
                         (let ((target (haskell-session-target session)))
                           (if target (list target) nil)))))))
-      ('stack-ghci
-       (append (list (format "Starting inferior %s GHCi process using %s"
-                             (haskell-tool-config-tool-name haskell-mode-stack-ghci)
-                             (haskell-tool-config-process-path haskell-mode-stack-ghci))
-                     session-name
-                     nil)
-               (apply haskell-process-wrapper-function
-                      (list
-                       (append
-                        (haskell-process-path-to-list haskell-process-path-stack)
-                        (list "ghci")
-                        (let ((target (haskell-session-target session)))
-                          (if target (list target) nil))
-                        haskell-process-args-stack-ghci))))))))
-
-(defun haskell-process-path-to-list (path)
-  "Convert a path (which may be a string or a list) to a list."
-  (if (stringp path)
-      (list path)
-    path))
+      ('stack-ghci (funcall
+                    (haskell-tool-config-compute-process-log-and-command haskell-mode-stack-ghci)
+                    session)))))
 
 (defun haskell-process-make (name)
   "Make an inferior Haskell process."
