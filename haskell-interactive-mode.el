@@ -30,14 +30,12 @@
 
 (require 'haskell-mode)
 (require 'haskell-compile)
-(require 'haskell-navigate-imports)
 (require 'haskell-process)
-(require 'haskell-collapse)
 (require 'haskell-session)
 (require 'haskell-font-lock)
 (require 'haskell-presentation-mode)
 (require 'haskell-utils)
-
+(require 'haskell-string)
 (require 'ansi-color)
 (require 'cl-lib)
 (require 'etags)
@@ -1029,7 +1027,7 @@ This completion function is used in interactive REPL buffer itself."
 If there is one, pop that up in a buffer, similar to `debug-on-error'."
   (when (and haskell-interactive-types-for-show-ambiguous
              (string-match "^\n<interactive>:[-0-9]+:[-0-9]+:" response)
-             (not (string-match "^\n<interactive>:[-0-9]+:[-0-9]+:[\n ]+Warning:" response)))
+             (not (string-match "^\n<interactive>:[-0-9]+:[-0-9]+:[\n ]+[Ww]arning:" response)))
     (let ((inhibit-read-only t))
       (delete-region haskell-interactive-mode-prompt-start (point))
       (set-marker haskell-interactive-mode-prompt-start
